@@ -1,0 +1,290 @@
+---
+title: "Dlaczego wersje bibliotek mają znaczenie?"
+author: Piotr Sobczyk
+date: "5 Marca 2022"
+output: revealjs::revealjs_presentation
+---
+
+```{r setup, echo=FALSE, include=FALSE, cache=TRUE}
+install.packages("reticulate", repos="http://cran.us.r-project.org")
+```
+
+
+# Motywacja
+
+
+## Use case 1
+
+- Mamy dwa projekty. Jeden stworzyliśmy rok temu, drugi rozwijamy dzisiaj.
+- Mając na komputerze jedną wersję pakietów (R lub Python) może się okazać, że stary kod przestaje nam działać na nowych pakietach.
+- Co gorsze nie jesteśmy w stanie go uruchomić, bo nie pamiętamy jakie są wersje, które mieliśmy onegdaj zainstalowane.
+
+
+## Use case 2
+
+- Mamy 3 osoby w zespole, każda z nich niezależnie rozwija ten sam kod korzystając z systemu kontroli wersji. 
+- Po spięciu w jedną całość okazuje się, że wersje zależności są ze sobą niezgodne.
+- Przykład: pandas < 1.0.0 pozwalał na dosyć liberalne nadpisywanie wartości w kolumnach i wierszach. Obecnie powoduje to błędy.
+- Pakiety z tidyverse są znane z tego, że nie są wstecznie kompatybilne.
+
+## Use case 3
+
+- Napisaliśmy oprogramowanie którym chcemy podzielić się ze światem jako open-source.
+- Jakie biblioteki trzeba mieć zainstalowane żeby go uruchomić?
+- Jak możemy pomóc komuś komu program nie działa? Jak go debugować na odległość?
+
+##
+
+> Jeżeli mamy więcej niż jeden projekt i/lub współpracujemy z co najmniej jedną osobą to kontrola nad zależnościami będzie dla nas przydatna.
+
+> Anonimowy mieszkaniec Jeżyc
+
+**Uwaga!** To nie jest sztuka dla sztuki! To jest konieczność jeśli chce się pisać coś więcej niż skrypty na zaliczenie przedmiotu. 
+
+# Jak to zrobić?
+
+## Czy to takie proste?
+
+<iframe src="https://media.giphy.com/media/UqZ4imFIoljlr5O2sM/giphy.gif" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+## 
+
+Mamy dwa podstawowe problemy, które musimy rozwiązać:
+
+1. Jak skutecznie określić wymagania dotyczące bibliotek (i dzielić się nimi pomiędzy różnymi użytkownikami/komputerami)?
+2. Jak rozwiązać problem powstawania konfliktów pomiędzy zależnościami (głównie dotyczy Pythona)
+
+
+# Dependency management w R
+
+## Czy R się w ogóle to tego nadaje?
+
+R, jak wiadomo, jest językiem programowania nastawionym na analizę danych. Po to został stworzony prawie 30 lat temu. 
+
+> „Nie można zrobić konia wyścigowego ze świni. – Nie – odparł Samuel – Ale można z niej zrobić bardzo szybą świnię.“
+
+> John Steinbeck, Na wschód od Edenu
+
+##
+
+Tworzenie oprogramowania w R jest utrudnione, bo narzedzie do tego służące są mniej rozwinięte niż w Pythonie. Wynika to także z tego, że społeczność eRowa jest bardzie skupiona na tym jak wydobyć informację z danych niż jak zbudować dobrze działający (od strony czysto inżynierskiej) system.
+
+## Jakie mamy opcje?
+
+Jeszcze kilka lat temu jedyną opcją był [packrat](https://rstudio.github.io/packrat/).
+
+> Posługujący się wynalazkiem strzelec, zapytany o przydatność broni, miał podobno wyrazić, że kulomiot jest jak jego teściowa. Ciężki, brzydki, całkowicie bezużyteczny i nic, tylko wziąć i utopić w rzece.
+
+> Andrzej Sapkowski, Sezon burz 
+
+## Jakie mamy opcje?
+
+Ale od tego czasu sporo się zmieniło i mamy [renv](https://cran.r-project.org/web/packages/renv/vignettes/renv.html). Pozwala on łatwo określić zależności i się nimi dzielić za pomocą systemu kontroli wersji.
+
+
+```{r, eval=FALSE}
+library(renv)
+# install some packages
+renv::snapshot() # creates a lock file (similar to Pipfile.lock)
+
+# install some more
+
+renv::restore() # if sth breaks
+
+renv::snapshot() # to lock new versions
+```
+
+## Renv lockfile
+
+Dostajmy plik, który wygląda mniej więcej tak:
+
+```
+{
+  "R": {
+    "Version": "4.0.5",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cran.rstudio.com"
+      }
+    ]
+  },
+  "Packages": {
+    "renv": {
+      "Package": "renv",
+      "Version": "0.13.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "079cb1f03ff972b30401ed05623cbe92"
+    },
+    "rmarkdown": {
+      "Package": "rmarkdown",
+      "Version": "2.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "320017b52d05a943981272b295750388"
+    }
+  }
+}
+```
+
+## Przywracanie środowiska
+
+Kiedy otrzymujemy go od współpracownika (lub siebe z przeszłości) uruchmiany renva i przywracamy środowisko:
+
+```{r, eval=FALSE}
+renv::init()
+```
+
+
+##
+
+W podejściu do zarządzania zależnościami widzimy ogromną różnicę w filozofii stojącej za R i Pythonem.
+
+
+# Dependency management w Pythonie
+
+## Filozofia Pythona
+
+```{python}
+import this
+```
+
+> Explicit is better than implicit.
+
+Python wymaga dokładnego określenia zależności tak, żeby nie zaskakiwały nas podczas uruchomienia programu. R idzie bardziej na żywioł, ale jednocześnie jest mocno wymagający względem osób, które chcą się dzielić kodem. 
+
+## 
+
+Mini ciekawostka: Python czasem się wyłamuje z zasady z poematu: strong, implicit types.
+
+<iframe src="https://media.giphy.com/media/10tuFEeuACAnuw/giphy.gif" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+
+## 
+
+W Pythonie mamy [kilka opcji](https://modelpredict.com/python-dependency-management-tools), między innymi:
+
+- pipenv
+- pip + venv
+- poetry
+- conda.
+
+Na potrzeby tych zajęć skupię się na opcji pip+env - jest on prosty, choć niepozbawiony wad.
+
+## Dlaczego jest tak dużo opcji? 
+
+- Bo zarządzanie zależnościami to zadanie łatwe do sformułowania, ale trudne do zrealizowania.
+- Niektóre biblioteki mają sprzeczne zależności. 
+- Znajdowanie ,,najlepszego wspólnego mianownika" nie jest trywialen gdy mówimy o dziesiątkach czy setkach pakietów.
+
+## Conda, pip+venv
+
+- instalujemy kolejne biblioteki, przy konfliktach wersji zależności dostajemy o nich informacje
+- zależności są określane w pliku `requirements.txt`
+- grupa zależności dla naszych bibliotek w najnowszych wersjach może, z czasem, stać się sprzeczna
+- każda biblioteka ma swoje zależności - mamy wiec ogromne drzewo zależności.
+- Potrzebny jest specjalny software, który je ,,rozwiąże"
+
+## Conda, pip+venv
+
+Mamy dwie opcje: albo określimy dokładnie wersje naszych bibliotek, albo może się okazać, że w pewnym momencie aktualizacje spowodują, że nasze środowisko przestanie działać. Więcej info w [blog poście](https://kennethreitz.org/essays/2016/02/25/a-better-pip-workflow).
+
+Określenie wszystkich wersji na stałe i ich całkowite niezmienianie bardzo utrudnia to, aby software którego używamy był rozsądnie aktualny - jedna z dobrych zasad tworzenia oprogramowania.
+
+# Rozwiązanie drzewa zależności
+
+## pipenv
+
+- Pipfile: określenie zależności, które chcemy mieć.
+- Pipfile.lock - określenie dokładnych wersji wszystkich zależności (deterministic build).
+- Podobnie radzi sobie poetry.
+
+## pip + venv + pip-tools
+
+Każdy ma prawo używać czego chce, ale przedstawię kod dla opcji, która dla mnie osobiście jest najwygodniejsza.
+
+1. Tworzymy nowe środowisko w ukrytym folderze `.venv`
+
+```bash
+python3.8 -m venv .venv
+```
+
+2. Aktywujemy środowisko
+
+```bash
+source .venv/bin/activate
+```
+
+Teraz komenda `python` będzie odwoływać się do pythona z naszego wirtualnego środowiska.
+
+## pip + venv + pip-tools
+
+3. Instalujemy pip-toolsy
+
+```bash
+pip install -U pip setuptools wheel
+```
+
+4. Określamy plik requirements.in
+
+```
+pandas
+numpy
+sqlalchemy
+```
+
+5. Tworzymy requirements z dokładnymi wersjami bibliotek
+
+```bash
+pip-compile requirements.in
+```
+
+## pip + venv + pip-tools
+
+6. Instalujemy biblioteki
+
+```bash
+pip install -r $(PROJECT_DIR)/requirements.txt
+```
+
+Uwaga: w systemie kontroli wersji potrzebujemy zarówno pliku `requirements.in` jak i `requirements.txt`
+
+
+# Dlaczego w R jest mniej konfliktów?
+
+## Wynika to z natury tego skąd się instaluje pakiety.
+
+- W R mamy kilka głównych ,,źródeł pakietów" (package repository).
+- Przede wszystkim CRAN, ale dla zastosowań biologicznych kluczowy jest [BioConductor](https://www.bioconductor.org/).
+- Wywołanie `install.packages()` -> instalacje najnowszych wersji z CRAN.
+- **Zapewnienie, że nie ma konfliktu między pakietem a jego zależnościami leży po stronie twórcy pakietu.**
+- Jeśli z jakiegoś powodu pakietu nie da się zbudować jest on usuwany z CRANa. Dzięki temu, w teorii, nie ma konfliktów. W praktyce mogą one wystąpić na poziomie uruchomienia programu "runtime".
+
+## Proste?
+
+<iframe src="https://media.giphy.com/media/5bvzrKfaNLMdSVJB3Q/giphy.gif" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+## 
+
+- Pakiety są nie tylko na CRANie!
+- Część jest dostępnych (wyłącznie) na githubie czy bitbuckecie. Nawet bardzo popularne jak na przykład [slidify](https://github.com/ramnathv/slidify).
+- `renv` wspiera również ich instalację korzystając z pakietu [remote](https://cran.r-project.org/web/packages/remotes/vignettes/dependencies.html).
+
+
+## Remote
+
+- umożliwia ściągnięcie wersji z githuba na moment konkretnego commita
+- **w teorii**, mógłby on służyć do określenia dokładnych zależności
+- potrzebne byłoby pełne mapowanie commitów na wersje bibliotek.
+- ponieważ nie wszystkie pakiety są open sourcowe to nie jest to rozwiązanie, które byłoby wystarczająco stabilne na produkcję. Ale dobre na debugging.
+- Microsoft ma swoje rozwiązania na MRANie ze snapshotami CRANa na poszczególne dni. Warte uwagi [rozwiązanie](https://mran.microsoft.com/documents/rro/reproducibility).
+
+
+# Zadanie
+
+1. Stwórz repozytorium na githubie.
+2. Zainicjuj lokalnie nowy projekt w swoim ulubionym IDE.
+3. Określ zależności (kilka bibliotek, które zwykle używasz pandas, numpy, dplyr, ggplot2 etc), wygeneruj ich dokładne wersje i zrób commita.
+4. Utwórz nowy projekt klonując repozytorium innej osoby. Stwórz nowe środowisko na podstawie pliku z lockiem.
+

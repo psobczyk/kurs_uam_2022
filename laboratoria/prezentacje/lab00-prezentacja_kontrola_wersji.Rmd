@@ -1,0 +1,207 @@
+---
+title: "Kontrola wersji"
+author: Piotr Sobczyk
+date: "5 Marca 2022"
+output: revealjs::revealjs_presentation
+---
+
+# Różne formalności
+
+## Kim jestem?
+
+- Analiza danych
+- Matematyka
+- Szychta w danych
+
+
+## Czego będziemy się uczyć?
+
+- Git.
+- zarządzanie zależnościami.
+- shiny, shinydashboard, golem.
+- lintr, styler, testthat, usethis, CI/CD.
+- pylint, mypy, pytest.
+- Docker.
+
+
+## Wersja pythonowa
+
+- Na zajęciach omawiam R
+- Materiały Pythonowe są udostępnione
+- Ćwiczenia w dowolnym języku
+
+## Zaliczenie
+
+- Projekt - interaktywna aplikacja związana z danymi (dashboard, ML etc.).
+- Grupy 2-3 osobowe.
+- Dowolny temat zgłaszany bezwzględnie do końca kwietnia (tydzień opóźnienia - 0.25 oceny w dół).
+- Wykonanie w shiny/dashu.
+- Kluczowe jest stosowanie się do dobrych zasad programowania, które będą omówione.
+- Sama aplikacja nie jest kluczowa, ale nie powinna być żenująco mała.
+
+##
+
+<iframe src="https://media.giphy.com/media/ghuvaCOI6GOoTX0RmH/giphy.gif" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+
+## Wymagania projektu
+
+- Użycie Pull requestów (nie mergujemy do mastera).
+- Użycie formatowania kodu (zgodność z black lub styleRem).
+- Użycie lintera.
+- Napisane testy jednostkowe (miarą code coverage).
+- Dockeryzacja.
+- Aplikacja, która ma sens ;)
+- 1000+ linii kodu (negocjowalne)
+
+
+# Czym jest Git?
+
+##
+
+<img src="../images/signal-2022-01-25-083520_001.jpeg"  height="600">
+
+
+## Co to jest Git?
+
+> Git jest systemem kontroli wersji. To znaczy, że pozwala na śledzenie i zarządzanie historią kodu źródłowego.
+
+Git nie jest jedyną opcją na kontrolę wersji. Alternatywy:
+
+- Subversion
+- Każda chmura ma swoje rozwiązanie np. AWS CodeCommit
+
+
+#### Uwaga
+
+Bardzo użyteczne np. do pisania prac dyplomowych.
+
+## Serwery do zarządzanie repozytoriami Gita
+
+- GitHub
+- Gitlab
+- BitBucket
+- SourceForge
+- Własny serwer
+
+
+#### Uwaga
+
+Github pozawala na hosting statycznych stron internetowych (Jekyll, Hugo, Next.js etc.)
+Starcza na większość podstawowych potrzeb o ile nie wymagany kontakt np. z bazą danych.
+
+# Co trzeba umieć żeby sprawnie korzystać z Gita
+
+## Terminal
+
+Nie ten terminal.
+
+<img src="../images/terminal_movie.png"  height="400">
+
+## Nie ten terminal 
+
+<img src="../images/termianl_platnosc.jpg"  height="500">
+
+
+
+## Bardziej taki terminal 
+
+<img src="../images/terminal_matrix.jpeg"  height="450">
+
+Jeśli korzystacie z czegoś na bazie Unixa (Linux, Mac) to będzie łatwo. Z Windowsem są większe problemy.
+
+
+# Czas na gita modły
+
+## Przedstawiamy się
+
+```
+git config --global user.name 'Jane Doe'
+git config --global user.email 'jane@example.com'
+git config --global --list
+```
+
+## Zakładanie repozytorium
+
+
+## Zrobienie pierwszego commita
+
+```
+echo "# demo-repo" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:psobczyk/demo-repo.git
+git push -u origin main
+```
+
+## Uwaga
+
+Jeśli korzysta si z IDE to nie trzeba pamiętać tych komend. Można je ,,wyklikać".
+Ale warto mimo wszystko wiedzieć, co się dzieje pod spodem. Na co dzień robimy to za pomocą RStudio czy PyCharma.
+
+
+## Zakładanie gałęzi
+
+```
+git checkout -b first-branch
+```
+
+
+## Pull/merge request
+
+Na Githubie/Gitlabie.
+
+
+## Merge
+
+W Pull request "mergujemy" do głównej gałęzi (master a ostatnio nazywana main).
+
+Idealnie jeśli:
+
+> This branch has no conflicts with the base branch
+
+## Ciągnij z gałęzi Pana
+
+```
+git pull master
+```
+
+
+## merge z masterem
+
+
+```
+git merge origin/main
+```
+
+
+# Zadania
+
+## Zadanie 1.
+
+Przejdź przez instrukcję instalacji dostępną [tutaj](https://happygitwithr.com/install-intro.html).
+
+1. Sprawdź jak na swoim systemie operacyjnym korzystsać z [terminala](https://happygitwithr.com/shell.html#shell)
+2. Załóż konto na GiHubie (hint można ubiegać się o studenckją zniżkę)
+3. Zainstaluj RStudio
+4. Zainstaluj gita
+5. Jeśli nie lubisz pracować z konsoli zainstaluj narzędzie do zarządzania repozytoriami lokalnie na Twoim komputerze. RStudio daje taką możliwość podobnie jak większość dobrych IDE (PyCharm, DataSpell). Są też dedykowane programy typu [GitKraken](https://www.gitkraken.com) czy GitHub Desktop.
+
+## Zadanie 2.
+
+Utwórz repozytorium na Githubie i ściągnij je na swój komputer. 
+Dodaj plik z prostym skryptem (.R lub .py)
+Swórz commit-a i wyślij go na serwer.
+Podziel się repozytorium z kolegą/koleżanką.
+Ściągnij czyjeś repo. Otwórz, przeczytaj i uruchom skrypt
+
+
+
+# Źródła
+
+## Źródła
+
+- https://github.com/
+- https://happygitwithr.com/
+- https://learngitbranching.js.org/
