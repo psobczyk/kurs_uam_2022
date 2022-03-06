@@ -1,0 +1,366 @@
+---
+title: "Podsumowanie - Pierwsze zajęcia"
+author: "Piotr Sobczyk"
+date: "6 Marca 2022"
+output: html_document
+---
+
+# Czego się nauczyliśmy? 
+
+Git jest dobrym wyborem jako system kontroli wersji. Żeby wygodnie go używać warto użyć usługi, która umożliwia hostowanie gitowych repozytoriów (projektów). Naturalnym wyborem jest Github.
+
+*Zadanie 1*
+
+Zarejestruj się na Githubie i stwórz repozytorium. Masz możliwość aplikowania o licencję studencką (m.in. darmowe prywatne repo).
+
+# Git
+
+### Instalacja Gita
+
+Żeby skorzystać z Git trzeba go zainstalować.
+
+<img src="https://starecat.com/content/wp-content/uploads/thank-you-captain-obvious-meme.jpg"  height="300">
+
+
+Instrukcję można znaleźć [tutaj](https://happygitwithr.com/install-git.html).
+
+**¡Importante!** Bez git nie ruszymy dalej. W razie trudności:
+
+1. Błąd, który Wam wyskakuje wrzucacie go Google.
+2. Znajdujecie możliwe rozwiązanie (najlepsze źródłoto Stack Overflow).
+3. Próbujecie jeszcze raz i w razie potrzeby wracacie do punktu 1.
+
+W przypadku gdyby ktoś wpadł w nieskończoną pętlę proszę o kontakt.
+
+### Korzystanie z Gita
+
+
+W praktyce, w większości przypadków możecie korzystać z Gita za pośrednictwem Waszego ulubionego IDE.
+
+Dla R będzie to RStudio. Jeśli go nie macie to koniecznie [zainstalujcie](https://www.rstudio.com/products/rstudio/download/).
+
+<img src="images/screen_rstudio_git.png"  height="300">
+
+Jak widać możemy wygodnie (od lewej do prawej):
+
+- sprawdzić zmiany wprowadzone w plikach od ostatniego commita
+- zrobić commita
+- pobrać wersję z serwera (pull)
+- wysłać na serwer (push)
+- sprawdzić historie commitów
+- cofnąć zmiany, zignorować plik, otworzyć terminal (**może być wygodne jeśli ktoś korzysta z Windowsa**)
+- stworzyć nową gałąź
+- zmienić gałąź
+
+Pod spodem można dodać pliki.
+
+#### Jak wygląda typowa interakcja z Gitem?
+
+1. Chcemy dodać nową funkcjonalność/coś naprawić
+2. Zaczynamy od branch master
+3. Robimy pull (chcemy być zsynchronizowanie z serwerem).
+4. Tworzymy nowego brancha.
+5. Piszemy kod.
+
+![](https://memegenerator.net/img/instances/33633967.jpg)
+
+6. Dodajemy pliki, które zmieniliśmy (Changes not staged for commit).
+7. Tworzymy commit-a
+8. Wysyłamy na serwer.
+
+Dalej jest interakcja z Githubem.
+
+<img src="images/screen_github_pull.png"  height="300">
+
+9. Klikamy w New pull request i wybieramy, którą gałąź chcemy zmergować.
+10. Pull request **zostaje przez kogoś sprawdzony**.
+11. Jak dostajemy okejkę to klikamy w *Merge pull request*
+
+
+```bash
+git init # tworzenei repo lokalnie
+git pull # zmiany z serwera
+git checkout -b new-branch # nowa gałąź
+git add file1.R file2.py # staging plików
+git commit -m 'commit message'
+git push
+```
+
+#### Konflikty
+
+Może się zdarzyć, że zmergowanie brancha nie jest możliwe, ponieważ występuje konflikt pomiędzy wersją naszą, a tą na serwerze. Najczęściej dlatego, że w międzyczasie ktoś inny wrzucił tam swoje zmiany. Wtedy te konflikty trzeba rozwiązać, dodać zmienione pliki.
+
+```bash
+git checkout -b new-branch # musimy być na nowej gałęzi
+git merge master # próbujemy włączyć mastera
+# rozwiazujemy konflikty lokalnie
+git add conflict_file.py
+git commit -m 'merging with master'
+git push
+```
+
+Więcej na temat tego jak radzić sobie z branchami (gałęziami) można znaleźć [tutaj](https://learngitbranching.js.org/).
+
+
+#### gitignore
+
+<img src="https://media2.giphy.com/media/3o7TKFy1gaoy1JNqZG/giphy.gif?cid=ecf05e47vvrhiwuar5opcv0vjc8ycnre5kzsuntli8bzb2vw&rid=giphy.gif" width="480" height="330">
+
+Tak jak nie ma sensu pakować wszystkich swoich rzeczy na wakacje, tak nie należy pakować wszystkich lokalnych plików do git-owego repozytorium. W szczególności należy unikać dodawania dużych plików (w razie konieczności należy skorzystać z [dedykowanego rozwiązania](https://git-lfs.github.com/)).
+
+Aby utrzymać porządek i nie dodać przypadkowo ważnych plików należy umieścić informację o tym co **nie** jest potrzebne w pliku gitignore.
+
+```bash
+raw_data/ #wykluczenie całego folderu
+!raw_data/include_me/* # ale umożliwamuy dodawanie pików w wybranym jego podfolderze
+*.html #wykluczenie wszystkich plików html
+raport*.* # wykluczenie plikow ze slowem raport w nazwie
+```
+
+#### Synchronizacja lokalnego repo z tym na serwerze
+
+Mamy dwie opcje:
+
+1. Możemy sklonować repozytorium znajdujące się na Githubie
+
+```bash
+git clone https://github.com/psobczyk/kurs_uam_2022.git
+```
+
+2. Jeśli stworzyliśmy równocześnie repozytorium lokalnie i drugie na Githubie to trzeba je ze sobą połączyć. W tym celu loklanie okreslamy gdzie zdalnie (remote) się ono znajduje.
+
+```bash
+git remote -v # sprawdzamy jaki jest obecnie remote server
+
+git remote add origin https://github.com/psobczyk/kurs_uam_2022.git
+```
+
+#### https czy ssh - o co w tym chodzi?
+
+Jak zapewne zauważyliście na Githubie, klikając na klonowanie repozytorium mamy dwie opcje https i ssh. Pierwsza opcja oznacza, że wykonując wszelkie akcje na repozytorium będziemy się uwierzytelniać za pomocą loginu i hasła. Jest to dosyć niewygodne zwłaszcza przy dużej liczbie interakcji (i porządnym, długim haśle). 
+
+Druga opcja opiera się na użyciu kluczy gpg. Jest to bezpieczniejsza i wygodniejsza forma autoryzacji. W uproszczeniu: generuje się dwa klucze - prywatny i publiczny. Informację zakodowaną kluczem publicznym da się odczytać jedynie posiadając klucz prywatny. **Klucz publiczny** udostępnia się Githubowi, który jest dzięki temu w stanie sprawdzić czy my to rzeczywiście my (czyli czy posiadamy klucz prywatny). 
+
+Więcej na temat generowanie kluczy znajdziecie [tutaj](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
+
+Proces dodawanie ich do konta jest opisany [tutaj](https://docs.github.com/en/authentication/managing-commit-signature-verification/adding-a-new-gpg-key-to-your-github-account).
+
+<img src="https://media0.giphy.com/media/H42aesEqaLy4hITnlH/giphy.gif?cid=ecf05e47rivv92234m3hnpig2tvu04wg9mjisgvl5k3fzfnz&rid=giphy.gif" height=350>
+
+**NIGDY**
+
+**NIKOMU**
+
+**NIE UDOSTĘPNIAMY**
+
+**KLUCZA PRYWATNEGO**
+
+<img src="https://media0.giphy.com/media/X8t6i3zOvLfGw/giphy.gif?cid=ecf05e472wfsd49gioecn9xj100a2ylrizu0joch1zr0128e&rid=giphy.gif" height=350>
+
+^^^ Podwójny gif pokazujący, że to jest naprawdę ważne.
+
+
+#### Użyteczna ściągawka
+
+[Ściągawka do gita](https://education.github.com/git-cheat-sheet-education.pdf).
+
+
+*Zadanie 2*
+
+Sprawdź, że masz dostęp do terminala na swoim komputerze i wywołaj kilka prostych gitowych komend.
+
+# Rozwiązywanie zależności bibliotek
+
+Omawialiśmy różne opcje w R i w Pythonie. Ale skupmy się na tych rozwiązaniach, które są przeze mnie sugerowane. Nie musicie się zgadzać :) 
+
+## R 
+
+Używamy [renv](https://rstudio.github.io/renv/articles/renv.html). Kropka.
+Przy tworzeniu nowego projeku w RStudio możemy kliknąć, że chcemy użyć renv-a. 
+Efektem jest utworzenie wirtualnego środowiska, czyli nie korzystamy z pakietów eRowych 
+wcześniej zainstalowanych a mamy do dyspozycji coś co zachowuje się jak świeża, czysta
+instalacja eRa.
+
+### Typowy workflow
+
+```{r, eval=FALSE}
+library(renv)
+
+##
+# Tutaj instalujemy potrzebne nam pakiety
+##
+renv::snapshot() # tworzy lock file (podobny do pythonowego Pipfile.lock)
+# dalej rozwijamy projekt
+# instalując kolejne pakiety
+
+renv::restore() # jeśli coś przestało działać wracamy do ostatniej wersji
+
+renv::snapshot() # jeśli wszystko działa to zapamię†ujemy ostatnie wersje pakietów
+```
+
+## Renv lockfile
+
+Dostajmy plik, który wygląda mniej więcej tak:
+
+```bash
+{
+  "R": {
+    "Version": "4.0.5",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cran.rstudio.com"
+      }
+    ]
+  },
+  "Packages": {
+    "renv": {
+      "Package": "renv",
+      "Version": "0.13.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "079cb1f03ff972b30401ed05623cbe92"
+    },
+    "rmarkdown": {
+      "Package": "rmarkdown",
+      "Version": "2.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "320017b52d05a943981272b295750388"
+    }
+  }
+}
+```
+
+Do systemu kontroli wersji wrzucamy:
+
+- renv.lock
+- .Rprofile
+- renv/activate.R.
+
+
+**Uwaga**
+
+renv wspiera nie tylko CRANa. Jest dostępny Bioconductor, można instalować pakiety prosto z Githuba. 
+Należy dodać resztę folderu `renv`` do pliku .gitignore.
+
+
+## Przywracanie środowiska
+
+
+```{r, eval=FALSE}
+renv::init() # jesli nie zrobiło sie tego wcześniej
+renv::restore()
+```
+
+
+Więcej informacji [tutaj](https://rstudio.github.io/renv/articles/collaborating.html)
+
+
+## Python
+
+Sugerowane podejście to użycie trójcy pip+venv+pip-tools.
+
+### Środowisko wirtualne
+
+Python domyślnie, w porównaniu z eRem, ma możliwość tworzenia wirtualnych środowisk (virtual environment).
+Jest to bardzo wygodna warstwa abstrakcji, która pozwala odizolować środowiska, w których działają poszczególne projekty. Dobre IDE domyślnie tworzą środowiska wirtualne dla nowych projektów. Jest to dobrą praktykę i nie należy robić inaczej.
+
+Jeśli nie macie doświadczenia z wirtualnymi środowiskami to zachęcam mocno do przeczytania [tego materiału](https://realpython.com/python-virtual-environments-a-primer/).
+
+### Typowy workflow w terminalu dla [pip](https://realpython.com/what-is-pip/) + venv + [pip-tools](https://github.com/jazzband/pip-tools).
+
+1. Tworzymy nowe środowisko. Dobre miejsce to ukryty folder `.venv` w naszym głownym folderze.
+
+```bash
+python3.8 -m venv .venv
+```
+
+Tak jak pisałem wyżej, IDE może to zrobić na poziomie inicjalizacji projektu.
+
+
+2. Aktywujemy środowisko
+
+```bash
+source .venv/bin/activate
+```
+
+Teraz w naszym terminalu Python będzie korzystać domyślnie z naszego wirtualnego środowiska. To jest cecha konkretnej otwartej konsoli a nie systemu. Nowo otwarta konsola nie będzie wskazywać na to środowisko wirtualne.
+Możemy sprawdzić jaka jest ścieżka pod którą Python będzie szukać bibliotek
+
+```bash
+echo $PATH
+```
+
+
+3. Instalujemy pip-toolsy
+
+```bash
+pip install -U pip setuptools wheel
+```
+
+4. Określamy plik requirements.in
+
+```
+pandas
+numpy
+sqlalchemy
+```
+
+5. Tworzymy requirements z dokładnymi wersjami bibliotek
+
+```bash
+pip-compile requirements.in
+```
+
+6. Instalujemy biblioteki
+
+```bash
+pip install -r requirements.txt
+```
+
+7. Ewentualnie wyłączenie środowiska wirtualnego
+
+```bash
+deactivate
+```
+
+
+### Praca z systemem kontroli wersji
+
+Do gita wrzucamy dwa pliki:
+
+- requirements.in (czyli nasze wymagania)
+- requirements.txt (czyli to co pip-compile udało się wywnioskować z drzewa zależności)
+
+**Achtung!** 
+
+Należy dodać folder `.venv` do pliku .gitignore.
+
+Po ściągnięciu repozytorium, jeśli nie istnieje to tworzymy środowisko wirtualne, a potem instalujemy pakiety komendą
+
+```bash
+pip install -r requirements.txt
+```
+
+<img src="https://c.tenor.com/zgphOkv40acAAAAd/holy-grail-monty-python.gif" height=300>
+
+W praktyce występuje kilka problemów:
+
+- czasem wynik działania `pip-compile` jest nieprawidłowy i trzeba mu pomóc dodając dodatkowe ograniczenia w pliku `requirements.in` (porównaj [tu](https://github.com/jazzband/pip-tools/issues/1372) i [tu](https://github.com/jazzband/pip-tools/issues/693)]).
+- wsparcie dla tworzenia zależności dla wielu środowisk (testowe, devowe, produkcyjny) (por. [ticket](https://github.com/jazzband/pip-tools/issues/532))
+
+Czasami rozwiązanie drzewa zalezności wymaga ręcznych manipulacji. O różnych problemach na jakie można napotkać przeczytacie [tutaj](https://pip.pypa.io/en/stable/topics/dependency-resolution/). 
+
+### Python - praca w IDE
+
+Dobre IDE mają oczywiście wsparcie dla Gita, ale nie oznacza to, że jesteśmy w stanie żyć zupełnie bez komend w terminalu. Samo ,,flow gitowe" czy stworzenie środowiska wirtualnego możemy tam zrobić. Ale rozwiązanie drzewa zależność, instalację pakietów z pliku requirements.txt robimy już z konsoli.
+
+
+**Zadanie 3**
+
+1. Stwórz repozytorium na githubie.
+2. Zainicjuj lokalnie nowy projekt w swoim ulubionym IDE.
+3. Określ zależności (kilka bibliotek, które zwykle używasz pandas, numpy, dplyr, ggplot2 etc), wygeneruj ich dokładne wersje i zrób commita.
+4. Utwórz nowy projekt klonując repozytorium innej osoby. Stwórz nowe środowisko na podstawie pliku z lockiem.
+

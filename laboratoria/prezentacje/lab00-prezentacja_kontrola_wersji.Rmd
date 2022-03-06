@@ -17,11 +17,12 @@ output: revealjs::revealjs_presentation
 ## Czego będziemy się uczyć?
 
 - Git.
-- zarządzanie zależnościami.
-- shiny, shinydashboard, golem.
+- Zarządzanie zależnościami.
+- Shiny, shinydashboard, golem.
 - lintr, styler, testthat, usethis, CI/CD.
 - pylint, mypy, pytest.
 - Docker.
+- Strona kursu [https://github.com/psobczyk/kurs_uam_2022](https://github.com/psobczyk/kurs_uam_2022).
 
 
 ## Wersja pythonowa
