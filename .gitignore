@@ -6,3 +6,5 @@
 .DS_Store
 renv/
 *.Rproj
+.Rdata
+.httr-oauth
